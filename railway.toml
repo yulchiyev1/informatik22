@@ -2,7 +2,8 @@
 builder = "nixpacks"
 
 [deploy]
-startCommand = "python manage.py migrate --noinput && gunicorn informatik22.wsgi --bind 0.0.0.0:$PORT --workers 2 --log-file -"
+startCommand = "python manage.py migrate --noinput && python create_admin.py && gunicorn informatik22.wsgi --bind 0.0.0.0:$PORT --workers 2 --log-file -"
+
 healthcheckPath = "/login/"
 healthcheckTimeout = 300
 restartPolicyType = "on_failure"
