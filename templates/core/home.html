@@ -1,0 +1,334 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Bosh Sahifa — Informatik22{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row g-4">
+
+        <!-- ═══════════ LEFT SIDEBAR (col-md-4) ═══════════ -->
+        <div class="col-md-4">
+
+            <!-- ── Dars Materiallari ── -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h2 class="section-title">
+                        <i class="bi bi-folder2-open me-2"></i>Dars Materiallari
+                    </h2>
+
+                    {% if materials %}
+                        <ul class="list-unstyled mb-0">
+                            {% for material in materials %}
+                            <li class="d-flex align-items-center gap-2 py-2 border-bottom">
+                                <i class="bi bi-file-earmark-arrow-down text-primary fs-5"></i>
+                                <div class="flex-grow-1 overflow-hidden">
+                                    <div class="fw-600 text-truncate" style="font-size:0.92rem;max-width:180px;">
+                                        {{ material.title }}
+                                    </div>
+                                    <small class="text-muted">
+                                        {{ material.uploaded_at|date:"d.m.Y" }}
+                                    </small>
+                                </div>
+                                <a href="{{ material.file.url }}"
+                                   class="btn btn-sm btn-outline-primary flex-shrink-0"
+                                   download
+                                   title="Yuklab olish">
+                                    <i class="bi bi-download"></i>
+                                </a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <div class="text-center text-muted py-3">
+                            <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+                            Hozircha materiallar mavjud emas.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- ── Faollar Jadvali (Leaderboard) ── -->
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="section-title">
+                        🏆 Faollar Jadvali
+                    </h2>
+
+                    {% if top_students %}
+                        <div>
+                            {% for profile in top_students %}
+                            <div class="leader-item">
+                                <span class="leader-rank
+                                    {% if forloop.counter == 1 %}rank-1
+                                    {% elif forloop.counter == 2 %}rank-2
+                                    {% elif forloop.counter == 3 %}rank-3
+                                    {% else %}rank-other{% endif %}">
+                                    {% if forloop.counter == 1 %}🥇
+                                    {% elif forloop.counter == 2 %}🥈
+                                    {% elif forloop.counter == 3 %}🥉
+                                    {% else %}{{ forloop.counter }}{% endif %}
+                                </span>
+                                <div class="flex-grow-1">
+                                    <div class="fw-600" style="font-size:0.92rem;">
+                                        {% if profile.full_name %}
+                                            {{ profile.full_name }}
+                                        {% else %}
+                                            {{ profile.user.username }}
+                                        {% endif %}
+                                    </div>
+                                    {% if profile.student_class %}
+                                    <small class="text-muted">{{ profile.student_class }}</small>
+                                    {% endif %}
+                                </div>
+                                <span class="badge"
+                                      style="background:#e8f0fe;color:#1e4b82;font-weight:700;font-size:0.9rem;">
+                                    {{ profile.points }} bal
+                                </span>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center text-muted py-3">
+                            <i class="bi bi-trophy fs-2 d-block mb-2"></i>
+                            Hali tasdiqlangan o'quvchilar yo'q.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+        <!-- ═══════════ END LEFT SIDEBAR ═══════════ -->
+
+
+        <!-- ═══════════ RIGHT MAIN (col-md-8) ═══════════ -->
+        <div class="col-md-8">
+
+            <!-- ── Bugungi Kun Quizi ── -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h2 class="section-title">
+                        🎯 Bugungi Kun Quizi
+                    </h2>
+
+                    {% if latest_quiz %}
+                    <form id="quiz-form">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <p class="fw-600 fs-6 mb-3" style="color:#1a1a2e;line-height:1.6;">
+                                <i class="bi bi-question-circle text-primary me-2"></i>
+                                {{ latest_quiz.question }}
+                            </p>
+                        </div>
+
+                        <div class="row g-2">
+                            {% for letter, option_text in quiz_options %}
+                            {% endfor %}
+
+                            <!-- Option A -->
+                            <div class="col-md-6">
+                                <div class="quiz-option p-3 border rounded-3 bg-white" style="cursor:pointer;"
+                                     onclick="selectOption(this,'A')">
+                                    <div class="form-check mb-0">
+                                        <input class="form-check-input" type="radio" name="quiz_answer"
+                                               id="opt_a" value="A">
+                                        <label class="form-check-label w-100" for="opt_a">
+                                            <span class="fw-700 text-primary me-2">A)</span>
+                                            {{ latest_quiz.option_a }}
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Option B -->
+                            <div class="col-md-6">
+                                <div class="quiz-option p-3 border rounded-3 bg-white" style="cursor:pointer;"
+                                     onclick="selectOption(this,'B')">
+                                    <div class="form-check mb-0">
+                                        <input class="form-check-input" type="radio" name="quiz_answer"
+                                               id="opt_b" value="B">
+                                        <label class="form-check-label w-100" for="opt_b">
+                                            <span class="fw-700 text-primary me-2">B)</span>
+                                            {{ latest_quiz.option_b }}
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Option C -->
+                            <div class="col-md-6">
+                                <div class="quiz-option p-3 border rounded-3 bg-white" style="cursor:pointer;"
+                                     onclick="selectOption(this,'C')">
+                                    <div class="form-check mb-0">
+                                        <input class="form-check-input" type="radio" name="quiz_answer"
+                                               id="opt_c" value="C">
+                                        <label class="form-check-label w-100" for="opt_c">
+                                            <span class="fw-700 text-primary me-2">C)</span>
+                                            {{ latest_quiz.option_c }}
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Option D -->
+                            <div class="col-md-6">
+                                <div class="quiz-option p-3 border rounded-3 bg-white" style="cursor:pointer;"
+                                     onclick="selectOption(this,'D')">
+                                    <div class="form-check mb-0">
+                                        <input class="form-check-input" type="radio" name="quiz_answer"
+                                               id="opt_d" value="D">
+                                        <label class="form-check-label w-100" for="opt_d">
+                                            <span class="fw-700 text-primary me-2">D)</span>
+                                            {{ latest_quiz.option_d }}
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-3 d-flex align-items-center gap-3">
+                            <button type="button" id="quiz-submit-btn"
+                                    class="btn btn-primary px-4"
+                                    onclick="checkAnswer('{{ latest_quiz.correct_answer }}')">
+                                <i class="bi bi-check2-circle me-1"></i>Javobni tekshirish
+                            </button>
+                            <div id="quiz-result" class="fw-600 fs-6"></div>
+                        </div>
+                    </form>
+                    {% else %}
+                        <div class="text-center text-muted py-3">
+                            <i class="bi bi-patch-question fs-2 d-block mb-2"></i>
+                            Hozircha quiz mavjud emas. Tez orada qo'shiladi!
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- ── O'quvchilar Ishlari ── -->
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <h2 class="section-title mb-0">
+                    📚 O'quvchilar Ishlari
+                </h2>
+                {% if user.is_authenticated %}
+                <a href="{% url 'create_post' %}" class="btn btn-primary btn-sm px-3">
+                    <i class="bi bi-plus-lg me-1"></i>Post joylash
+                    <span class="badge bg-warning text-dark ms-1" style="font-size:0.75rem;">+4 ball</span>
+                </a>
+                {% else %}
+                <a href="{% url 'login' %}" class="btn btn-outline-primary btn-sm px-3">
+                    <i class="bi bi-box-arrow-in-right me-1"></i>Kirish
+                </a>
+                {% endif %}
+            </div>
+
+            {% if posts %}
+                <div class="row g-3">
+                    {% for post in posts %}
+                    <div class="col-md-6">
+                        <div class="card h-100 post-card">
+                            {% if post.photo %}
+                            <img src="{{ post.photo.url }}"
+                                 class="card-img-top"
+                                 alt="{{ post.title }}">
+                            {% else %}
+                            <!-- Placeholder gradient for posts without a photo -->
+                            <div class="card-img-top d-flex align-items-center justify-content-center"
+                                 style="height:180px;background:linear-gradient(135deg,#1e4b82,#2d6ab4);border-radius:14px 14px 0 0;">
+                                <i class="bi bi-file-text text-white" style="font-size:3rem;opacity:0.5;"></i>
+                            </div>
+                            {% endif %}
+                            <div class="card-body d-flex flex-column">
+                                <span class="post-tag">
+                                    <i class="bi bi-person-fill me-1"></i>
+                                    {% if post.author.profile.full_name %}
+                                        {{ post.author.profile.full_name }}
+                                    {% else %}
+                                        {{ post.author.username }}
+                                    {% endif %}
+                                </span>
+                                <h3 class="card-title fw-700" style="font-size:1rem;color:#1a1a2e;">
+                                    {{ post.title }}
+                                </h3>
+
+                                <div class="mb-2">
+                                    <p class="fw-600 mb-1" style="font-size:0.82rem;color:#1e4b82;">
+                                        <i class="bi bi-lightbulb me-1"></i>Bugun nimani o'rgandim:
+                                    </p>
+                                    <p class="text-muted mb-0" style="font-size:0.88rem;line-height:1.5;">
+                                        {{ post.learned_today|truncatewords:20 }}
+                                    </p>
+                                </div>
+
+                                <div class="mt-auto pt-2 border-top">
+                                    <p class="fw-600 mb-1" style="font-size:0.82rem;color:#1e4b82;">
+                                        <i class="bi bi-stars me-1"></i>Tajribam:
+                                    </p>
+                                    <p class="text-muted mb-0" style="font-size:0.88rem;">
+                                        {{ post.experience|truncatewords:15 }}
+                                    </p>
+                                </div>
+
+                                <div class="post-meta mt-2">
+                                    <i class="bi bi-calendar3 me-1"></i>
+                                    {{ post.created_at|date:"d.m.Y H:i" }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="card">
+                    <div class="card-body text-center py-5 text-muted">
+                        <i class="bi bi-journals fs-1 d-block mb-3 text-primary opacity-50"></i>
+                        <h3 class="fw-600 fs-5">Hali postlar yo'q</h3>
+                        <p class="mb-3">Birinchi bo'lib o'z ishingizni ulashing!</p>
+                        {% if user.is_authenticated %}
+                        <a href="{% url 'create_post' %}" class="btn btn-primary px-4">
+                            <i class="bi bi-plus-lg me-1"></i>Post joylash
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+
+        </div>
+        <!-- ═══════════ END RIGHT MAIN ═══════════ -->
+
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // ── Quiz interaction ──────────────────────────────────────────
+    function selectOption(el, letter) {
+        // Visually highlight selected option
+        document.querySelectorAll('.quiz-option').forEach(opt => {
+            opt.style.background = '';
+            opt.style.borderColor = '';
+        });
+        el.style.background = '#e8f0fe';
+        el.style.borderColor = '#1e4b82';
+
+        // Tick the corresponding radio button
+        document.getElementById('opt_' + letter.toLowerCase()).checked = true;
+    }
+
+    function checkAnswer(correct) {
+        const selected = document.querySelector('input[name="quiz_answer"]:checked');
+        const result = document.getElementById('quiz-result');
+
+        if (!selected) {
+            result.innerHTML = '<span class="text-warning">⚠️ Iltimos, bitta javobni tanlang!</span>';
+            return;
+        }
+
+        if (selected.value === correct) {
+            result.innerHTML = '<span class="text-success">✅ To\'g\'ri javob! Ajoyib!</span>';
+        } else {
+            result.innerHTML = '<span class="text-danger">❌ Noto\'g\'ri. To\'g\'ri javob: <strong>' + correct + '</strong></span>';
+        }
+        document.getElementById('quiz-submit-btn').disabled = true;
+    }
+</script>
+{% endblock %}

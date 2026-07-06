@@ -1,0 +1,105 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Post Joylash — Informatik22{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-7 col-lg-6">
+
+            <!-- Header -->
+            <div class="text-center mb-4">
+                <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3"
+                     style="width:72px;height:72px;background:linear-gradient(135deg,#1e4b82,#2d6ab4);">
+                    <i class="bi bi-pencil-square text-white fs-2"></i>
+                </div>
+                <h1 class="fw-800 fs-3 mb-1" style="color:#1e4b82;">Yangi Post Joylash</h1>
+                <p class="text-muted mb-0" style="font-size:0.92rem;">
+                    Bugun o'rgangan narsalaringizni ulashing va
+                    <span class="badge" style="background:#e8f0fe;color:#1e4b82;font-weight:700;">+4 ball</span>
+                    qozonin!
+                </p>
+            </div>
+
+            <!-- Form Card -->
+            <div class="card">
+                <div class="card-body p-4">
+                    <form method="POST" enctype="multipart/form-data" novalidate id="create-post-form">
+                        {% csrf_token %}
+
+                        <!-- Title -->
+                        <div class="mb-3">
+                            <label for="id_title" class="form-label fw-600" style="color:#1e4b82;">
+                                <i class="bi bi-type-h1 me-1"></i>{{ form.title.label }}
+                            </label>
+                            {{ form.title }}
+                            {% if form.title.errors %}
+                            <div class="text-danger small mt-1">{{ form.title.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Photo -->
+                        <div class="mb-3">
+                            <label for="id_photo" class="form-label fw-600" style="color:#1e4b82;">
+                                <i class="bi bi-image me-1"></i>{{ form.photo.label }}
+                            </label>
+                            {{ form.photo }}
+                            <div class="form-text">Siz o'rganayotgan loyiha yoki mashqning rasmini yuklang.</div>
+                            {% if form.photo.errors %}
+                            <div class="text-danger small mt-1">{{ form.photo.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Learned Today -->
+                        <div class="mb-3">
+                            <label for="id_learned_today" class="form-label fw-600" style="color:#1e4b82;">
+                                <i class="bi bi-lightbulb me-1"></i>{{ form.learned_today.label }}
+                            </label>
+                            {{ form.learned_today }}
+                            <div class="form-text">Bugun qanday yangi narsa o'rgandingiz? Batafsil yozing.</div>
+                            {% if form.learned_today.errors %}
+                            <div class="text-danger small mt-1">{{ form.learned_today.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Experience -->
+                        <div class="mb-4">
+                            <label for="id_experience" class="form-label fw-600" style="color:#1e4b82;">
+                                <i class="bi bi-stars me-1"></i>{{ form.experience.label }}
+                            </label>
+                            {{ form.experience }}
+                            <div class="form-text">Qanday qiyinchiliklar bilan duch keldingiz? Nima qiziq bo'ldi?</div>
+                            {% if form.experience.errors %}
+                            <div class="text-danger small mt-1">{{ form.experience.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Points reminder -->
+                        <div class="alert d-flex align-items-center gap-2 mb-3"
+                             style="background:#e8f0fe;border:none;border-left:4px solid #1e4b82;border-radius:8px;">
+                            <i class="bi bi-trophy-fill text-warning fs-5"></i>
+                            <span style="color:#1e4b82;font-size:0.9rem;">
+                                Post muvaffaqiyatli joylashtirilgach, sizning ballingizga
+                                <strong>+4 ball</strong> qo'shiladi!
+                            </span>
+                        </div>
+
+                        <!-- Submit -->
+                        <button type="submit" class="btn btn-primary w-100 py-2" id="post-submit-btn">
+                            <i class="bi bi-send me-2"></i>Postni Joylash
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Back link -->
+            <div class="text-center mt-3">
+                <a href="{% url 'home' %}" class="text-decoration-none" style="color:#1e4b82;font-size:0.9rem;">
+                    <i class="bi bi-arrow-left me-1"></i>Bosh sahifaga qaytish
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

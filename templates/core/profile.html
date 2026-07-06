@@ -1,0 +1,131 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Mening Profilim — Informatik22{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-7 col-lg-6">
+
+            <!-- Profile Header Card -->
+            <div class="card mb-4"
+                 style="background:linear-gradient(135deg,#1e4b82 0%,#2d6ab4 100%);color:#fff;">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center gap-3">
+                        <!-- Avatar -->
+                        <div class="d-flex align-items-center justify-content-center rounded-circle flex-shrink-0"
+                             style="width:72px;height:72px;background:rgba(255,255,255,0.2);">
+                            <i class="bi bi-person-fill" style="font-size:2.2rem;"></i>
+                        </div>
+
+                        <div>
+                            <h1 class="fw-800 mb-1 fs-4">
+                                {% if profile.full_name %}
+                                    {{ profile.full_name }}
+                                {% else %}
+                                    {{ request.user.username }}
+                                {% endif %}
+                            </h1>
+                            <p class="mb-1 opacity-75" style="font-size:0.9rem;">
+                                <i class="bi bi-at me-1"></i>{{ request.user.username }}
+                            </p>
+                            {% if profile.student_class %}
+                            <p class="mb-0 opacity-75" style="font-size:0.9rem;">
+                                <i class="bi bi-mortarboard me-1"></i>{{ profile.student_class }} sinf
+                            </p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Stats row -->
+                    <div class="row g-2 mt-3">
+                        <!-- Points -->
+                        <div class="col-6">
+                            <div class="rounded-3 text-center py-2"
+                                 style="background:rgba(255,255,255,0.15);">
+                                <div class="fw-800 fs-3" style="color:#f0a500;">
+                                    {{ profile.points }}
+                                </div>
+                                <div style="font-size:0.82rem;opacity:0.9;">Jami Ball</div>
+                            </div>
+                        </div>
+
+                        <!-- Approval status -->
+                        <div class="col-6">
+                            <div class="rounded-3 text-center py-2"
+                                 style="background:rgba(255,255,255,0.15);">
+                                {% if profile.is_approved %}
+                                <div class="fw-700 fs-5">✅</div>
+                                <div style="font-size:0.82rem;opacity:0.9;">Tasdiqlangan</div>
+                                {% else %}
+                                <div class="fw-700 fs-5">⏳</div>
+                                <div style="font-size:0.82rem;opacity:0.9;">Tasdiq kutilmoqda</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Edit Form Card -->
+            <div class="card">
+                <div class="card-body p-4">
+                    <h2 class="section-title">
+                        <i class="bi bi-pencil-square me-2"></i>Ma'lumotlarni Tahrirlash
+                    </h2>
+
+                    <form method="POST" novalidate id="profile-form">
+                        {% csrf_token %}
+
+                        <!-- Full Name -->
+                        <div class="mb-3">
+                            <label for="id_full_name" class="form-label fw-600" style="color:#1e4b82;">
+                                <i class="bi bi-person me-1"></i>{{ form.full_name.label }}
+                            </label>
+                            {{ form.full_name }}
+                            {% if form.full_name.errors %}
+                            <div class="text-danger small mt-1">{{ form.full_name.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Student Class -->
+                        <div class="mb-4">
+                            <label for="id_student_class" class="form-label fw-600" style="color:#1e4b82;">
+                                <i class="bi bi-mortarboard me-1"></i>{{ form.student_class.label }}
+                            </label>
+                            {{ form.student_class }}
+                            {% if form.student_class.errors %}
+                            <div class="text-danger small mt-1">{{ form.student_class.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Submit -->
+                        <button type="submit" class="btn btn-primary w-100 py-2" id="profile-save-btn">
+                            <i class="bi bi-save me-2"></i>Saqlash
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Info box if not approved -->
+            {% if not profile.is_approved %}
+            <div class="alert alert-warning d-flex align-items-start gap-2 mt-3" role="alert">
+                <i class="bi bi-exclamation-triangle-fill flex-shrink-0 mt-1"></i>
+                <div>
+                    <strong>Diqqat!</strong> Profilingiz hali ustoz tomonidan tasdiqlanmagan.
+                    Tasdiqlangandan so'ng post joylash imkoniyatiga ega bo'lasiz.
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Back link -->
+            <div class="text-center mt-3">
+                <a href="{% url 'home' %}" class="text-decoration-none" style="color:#1e4b82;font-size:0.9rem;">
+                    <i class="bi bi-arrow-left me-1"></i>Bosh sahifaga qaytish
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

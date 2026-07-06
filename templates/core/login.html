@@ -1,0 +1,69 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Tizimga Kirish — Informatik22{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5 col-lg-4">
+
+            <!-- Logo / Header -->
+            <div class="text-center mb-4">
+                <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3"
+                     style="width:72px;height:72px;background:linear-gradient(135deg,#1e4b82,#2d6ab4);">
+                    <i class="bi bi-box-arrow-in-right text-white fs-2"></i>
+                </div>
+                <h1 class="fw-800 fs-3 mb-1" style="color:#1e4b82;">Tizimga Kirish</h1>
+                <p class="text-muted mb-0" style="font-size:0.92rem;">
+                    Hisobingizga kiring va o'qishni davom eting
+                </p>
+            </div>
+
+            <!-- Card -->
+            <div class="card">
+                <div class="card-body p-4">
+                    <form method="POST" novalidate id="login-form">
+                        {% csrf_token %}
+
+                        <!-- Username -->
+                        <div class="mb-3">
+                            <label for="id_username" class="form-label fw-600" style="color:#1e4b82;">
+                                <i class="bi bi-person me-1"></i>{{ form.username.label }}
+                            </label>
+                            {{ form.username }}
+                            {% if form.username.errors %}
+                            <div class="text-danger small mt-1">{{ form.username.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Password -->
+                        <div class="mb-4">
+                            <label for="id_password" class="form-label fw-600" style="color:#1e4b82;">
+                                <i class="bi bi-lock me-1"></i>{{ form.password.label }}
+                            </label>
+                            {{ form.password }}
+                            {% if form.password.errors %}
+                            <div class="text-danger small mt-1">{{ form.password.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Submit -->
+                        <button type="submit" class="btn btn-primary w-100 py-2" id="login-btn">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>Kirish
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Register link -->
+            <p class="text-center mt-3 text-muted" style="font-size:0.92rem;">
+                Hisobingiz yo'qmi?
+                <a href="{% url 'register' %}" style="color:#1e4b82;font-weight:600;">
+                    Ro'yxatdan o'ting
+                </a>
+            </p>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
