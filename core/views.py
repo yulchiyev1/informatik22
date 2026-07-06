@@ -78,9 +78,7 @@ def home(request):
     """
     materials = TeacherMaterial.objects.all()[:5]
 
-    top_students = Profile.objects.filter(
-        is_approved=True
-    ).order_by('-points')[:5]
+    top_students = Profile.objects.all().order_by('-points')[:5]
 
     if request.user.is_authenticated:
         latest_quiz = DailyTest.objects.exclude(solved_by=request.user).order_by('?').first()
@@ -131,13 +129,14 @@ def create_post(request):
     """
     profile, _ = Profile.objects.get_or_create(user=request.user)
 
-    # Security gate: only approved students may post
-    if not profile.is_approved:
+    from django.utils import timezone
+    today = timezone.localdate()
+    if StudentPost.objects.filter(author=request.user, created_at__date=today).exists():
         return HttpResponse(
             "<div style='font-family:sans-serif;text-align:center;margin-top:80px;"
             "color:#1e4b82;'>"
             "<h2>⚠️ Kechirasiz!</h2>"
-            "<p>Ustoz hali profilingizni tasdiqlamagan. Iltimos kuting!</p>"
+            "<p>Siz bugun allaqachon post yuklagansiz. Kuniga faqat bitta post joylash mumkin!</p>"
             "<a href='/' style='color:#1e4b82;'>← Bosh sahifaga qaytish</a>"
             "</div>",
             status=403
@@ -165,10 +164,10 @@ def create_post(request):
     return render(request, 'core/create_post.html', context)
 
 
-@login_required
 def submit_quiz(request, quiz_id):
     """
-    Handles quiz submission. Awards 1 point if correct and tracks that the user solved it.
+    Handles quiz submission. Awards 1 point if correct and tracks that the user solved it (for logged-in users).
+    Guests can solve but get no points.
     """
     if request.method == 'POST':
         try:
@@ -177,27 +176,33 @@ def submit_quiz(request, quiz_id):
             messages.error(request, "Quiz topilmadi.")
             return redirect('home')
 
-        # Check if already solved
-        if request.user in quiz.solved_by.all():
-            messages.warning(request, "Siz bu quizni allaqachon yechgansiz.")
-            return redirect('home')
-
         selected_answer = request.POST.get('quiz_answer')
         
         if not selected_answer:
             messages.warning(request, "Iltimos, javob variantini tanlang!")
             return redirect('home')
 
-        if selected_answer == quiz.correct_answer:
-            profile, _ = Profile.objects.get_or_create(user=request.user)
-            profile.points += 1.0
-            profile.save()
-            
-            quiz.solved_by.add(request.user)
-            messages.success(request, f"✅ To'g'ri javob! Sizga 1 ball qo'shildi. (To'g'ri javob: {quiz.correct_answer})")
+        if request.user.is_authenticated:
+            # Check if already solved
+            if request.user in quiz.solved_by.all():
+                messages.warning(request, "Siz bu quizni allaqachon yechgansiz.")
+                return redirect('home')
+
+            if selected_answer == quiz.correct_answer:
+                profile, _ = Profile.objects.get_or_create(user=request.user)
+                profile.points += 1.0
+                profile.save()
+                
+                quiz.solved_by.add(request.user)
+                messages.success(request, f"✅ To'g'ri javob! Sizga 1 ball qo'shildi. (To'g'ri javob: {quiz.correct_answer})")
+            else:
+                messages.error(request, f"❌ Noto'g'ri javob. To'g'ri javob '{quiz.correct_answer}' edi. Boshqa quizlarda omadingizni sinab ko'ring!")
+                quiz.solved_by.add(request.user)
         else:
-            messages.error(request, f"❌ Noto'g'ri javob. To'g'ri javob '{quiz.correct_answer}' edi. Boshqa quizlarda omadingizni sinab ko'ring!")
-            # Still add to solved_by so they can't try again to cheat
-            quiz.solved_by.add(request.user)
+            # Guest user logic
+            if selected_answer == quiz.correct_answer:
+                messages.success(request, f"✅ To'g'ri javob! (Siz tizimga kirmaganingiz uchun ball qo'shilmadi)")
+            else:
+                messages.error(request, f"❌ Noto'g'ri javob. To'g'ri javob '{quiz.correct_answer}' edi.")
 
     return redirect('home')
