@@ -12,6 +12,7 @@ class Profile(models.Model):
     student_class = models.CharField(max_length=50, blank=True, verbose_name="Sinf")
     is_approved = models.BooleanField(default=False, verbose_name="Tasdiqlangan")
     points = models.FloatField(default=0.0, verbose_name="Ballar")
+    last_quiz_attempt = models.DateField(null=True, blank=True, verbose_name="Oxirgi test yechgan sana")
 
     class Meta:
         verbose_name = "Profil"
@@ -48,6 +49,7 @@ class StudentPost(models.Model):
     photo = models.ImageField(upload_to='posts/', blank=True, null=True, verbose_name="Rasm")
     learned_today = models.TextField(verbose_name="Bugun nimani o'rgandim")
     experience = models.TextField(verbose_name="Tajribam")
+    likes = models.ManyToManyField(User, related_name='liked_posts', blank=True, verbose_name="Layklar")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Yaratilgan vaqt")
 
     class Meta:

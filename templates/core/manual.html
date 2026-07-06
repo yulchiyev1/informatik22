@@ -1,0 +1,58 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Saytdan Foydalanish Yo'riqnomasi — Informatik22{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-9">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                <div class="card-header bg-primary text-white p-4">
+                    <h1 class="fw-800 mb-0 fs-3"><i class="bi bi-journal-bookmark-fill me-2"></i>Qanday qilib ball ishlash va saytdan foydalanish mumkin?</h1>
+                </div>
+                
+                <div class="card-body p-4 p-md-5">
+                    
+                    <div class="mb-5">
+                        <h3 class="fw-700 text-primary mb-3"><i class="bi bi-1-circle me-2"></i>Kundalik Test (Quiz) yechish</h3>
+                        <p class="fs-5 text-muted mb-3">Har kuni saytga kirib yangi test ishlang va bilimingizni oshirib boring.</p>
+                        <ul class="list-group list-group-flush fs-6 mb-4">
+                            <li class="list-group-item px-0 border-0"><i class="bi bi-check-circle-fill text-success me-2"></i>Bosh sahifadagi <strong>"Javobni tekshirish"</strong> tugmasini bosib test topshirasiz.</li>
+                            <li class="list-group-item px-0 border-0"><i class="bi bi-check-circle-fill text-success me-2"></i>Agar javobingiz to'g'ri bo'lsa, avtomatik tarzda <strong>+1 ball</strong> qo'shiladi.</li>
+                            <li class="list-group-item px-0 border-0"><i class="bi bi-exclamation-circle-fill text-warning me-2"></i><strong>Muhim:</strong> Kuniga faqat bitta test ishlash imkoniyatingiz bor. Agar noto'g'ri topsangiz yoki to'g'ri topsangiz ham, ikkinchi test faqat ertasi kuni ochiladi. Shuning uchun o'ylab javob bering!</li>
+                        </ul>
+                    </div>
+
+                    <div class="mb-5">
+                        <h3 class="fw-700 text-primary mb-3"><i class="bi bi-2-circle me-2"></i>Post (O'zingiz o'rgangan bilim) joylash</h3>
+                        <p class="fs-5 text-muted mb-3">Boshqalarga ham foydasi tegishi uchun olgan bilimlaringizni ulashing.</p>
+                        <ul class="list-group list-group-flush fs-6 mb-4">
+                            <li class="list-group-item px-0 border-0"><i class="bi bi-check-circle-fill text-success me-2"></i>Tizimga kirgach <strong>"Post joylash"</strong> tugmasini bosing.</li>
+                            <li class="list-group-item px-0 border-0"><i class="bi bi-check-circle-fill text-success me-2"></i>O'rgangan darsingiz va shaxsiy amaliy tajribangiz haqida chiroyli qilib yozing (rasm ham qo'shishingiz mumkin).</li>
+                            <li class="list-group-item px-0 border-0"><i class="bi bi-check-circle-fill text-success me-2"></i>Post muvaffaqiyatli saqlangach, profilingizga <strong>+4 ball</strong> qo'shiladi!</li>
+                            <li class="list-group-item px-0 border-0"><i class="bi bi-exclamation-circle-fill text-warning me-2"></i><strong>Muhim:</strong> Kuniga faqat 1 marta post joylash ruxsat etiladi.</li>
+                        </ul>
+                    </div>
+
+                    <div class="mb-5">
+                        <h3 class="fw-700 text-primary mb-3"><i class="bi bi-3-circle me-2"></i>Like bosish tizimi</h3>
+                        <p class="fs-5 text-muted mb-3">Eng foydali postlarni yuqoriga ko'tarish uchun.</p>
+                        <ul class="list-group list-group-flush fs-6 mb-4">
+                            <li class="list-group-item px-0 border-0"><i class="bi bi-heart-fill text-danger me-2"></i>Boshqalar yozgan post sizga yoqsa, ❤️ Like tugmasini bosishingiz mumkin.</li>
+                            <li class="list-group-item px-0 border-0"><i class="bi bi-arrow-up-circle-fill text-primary me-2"></i>Bosh sahifada eng ko'p Like yig'gan postlar doim eng birinchi bo'lib ko'rinib turadi.</li>
+                        </ul>
+                    </div>
+
+                    <hr class="my-5 border-light">
+
+                    <div class="text-center bg-light p-4 rounded-3 border">
+                        <h4 class="fw-700 mb-2">Faollar jadvalida birinchi bo'lishni xohlaysizmi?</h4>
+                        <p class="text-muted mb-4">Har kuni bittadan post yuklang va bittadan to'g'ri test yeching. Shunda kuniga kafolatlangan tarzda +5 ball yig'ib borasiz.</p>
+                        <a href="{% url 'home' %}" class="btn btn-primary px-5 py-2 rounded-pill fw-600">Bosh sahifaga o'tish</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

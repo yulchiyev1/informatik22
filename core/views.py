@@ -80,12 +80,21 @@ def home(request):
 
     top_students = Profile.objects.exclude(user__is_superuser=True).order_by('-points')[:5]
 
+    from django.utils import timezone
+    from django.db.models import Count
+
     if request.user.is_authenticated:
-        latest_quiz = DailyTest.objects.exclude(solved_by=request.user).order_by('?').first()
+        profile, _ = Profile.objects.get_or_create(user=request.user)
+        today = timezone.localdate()
+        if profile.last_quiz_attempt == today:
+            latest_quiz = None  # Already attempted today
+        else:
+            latest_quiz = DailyTest.objects.exclude(solved_by=request.user).order_by('?').first()
     else:
         latest_quiz = DailyTest.objects.order_by('?').first()
 
-    posts = StudentPost.objects.all()[:2]  # Show only top 2 latest posts
+    # Order posts by likes count first, then by date
+    posts = StudentPost.objects.annotate(num_likes=Count('likes')).order_by('-num_likes', '-created_at')[:2]
 
     context = {
         'materials': materials,
@@ -183,20 +192,26 @@ def submit_quiz(request, quiz_id):
             return redirect('home')
 
         if request.user.is_authenticated:
-            # Check if already solved
-            if request.user in quiz.solved_by.all():
-                messages.warning(request, "Siz bu quizni allaqachon yechgansiz.")
+            # Prevent multiple attempts per day by updating last_quiz_attempt
+            from django.utils import timezone
+            profile, _ = Profile.objects.get_or_create(user=request.user)
+            today = timezone.localdate()
+            if profile.last_quiz_attempt == today:
+                messages.warning(request, "Siz bugun bitta test ishlab bo'ldingiz. Ertaga yana urinib ko'ring!")
                 return redirect('home')
 
+            profile.last_quiz_attempt = today
+            profile.save()
+
             if selected_answer == quiz.correct_answer:
-                profile, _ = Profile.objects.get_or_create(user=request.user)
                 profile.points += 1.0
                 profile.save()
                 
                 quiz.solved_by.add(request.user)
-                messages.success(request, f"✅ To'g'ri javob! Sizga 1 ball qo'shildi. (To'g'ri javob: {quiz.correct_answer})")
+                # "CONFETTI" kalit so'zini qo'shamiz, shablon orqali o'qish uchun
+                messages.success(request, f"CONFETTI ✅ To'g'ri javob! Sizga 1 ball qo'shildi. (To'g'ri javob: {quiz.correct_answer})")
             else:
-                messages.error(request, f"❌ Noto'g'ri javob. To'g'ri javob '{quiz.correct_answer}' edi. Boshqa quizlarda omadingizni sinab ko'ring!")
+                messages.error(request, f"❌ Noto'g'ri javob. To'g'ri javob '{quiz.correct_answer}' edi. Ertaga omadingizni sinab ko'ring!")
                 quiz.solved_by.add(request.user)
         else:
             # Guest user logic
@@ -225,3 +240,29 @@ def post_detail(request, pk):
     post = get_object_or_404(StudentPost, pk=pk)
     context = {'post': post}
     return render(request, 'core/post_detail.html', context)
+
+
+@login_required
+def like_post(request, pk):
+    """
+    Toggles a like on a student post.
+    """
+    from django.shortcuts import get_object_or_404
+    post = get_object_or_404(StudentPost, pk=pk)
+    if request.user in post.likes.all():
+        post.likes.remove(request.user)
+    else:
+        post.likes.add(request.user)
+    
+    # Redirect back to where they came from
+    referer = request.META.get('HTTP_REFERER')
+    if referer:
+        return redirect(referer)
+    return redirect('home')
+
+
+def manual_page(request):
+    """
+    Displays the user manual (Qo'llanma) on how to use the site and earn points.
+    """
+    return render(request, 'core/manual.html')
