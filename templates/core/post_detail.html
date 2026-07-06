@@ -1,0 +1,64 @@
+{% extends 'core/base.html' %}
+
+{% block title %}{{ post.title }} — Informatik22{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <div class="mb-3">
+                <a href="{% url 'post_list' %}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                    <i class="bi bi-arrow-left me-1"></i>Barcha postlarga qaytish
+                </a>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                <div class="card-header bg-white p-4 border-bottom-0">
+                    <h1 class="fw-800 mb-3" style="color: #1a1a2e; font-size: 2rem;">{{ post.title }}</h1>
+                    
+                    <div class="d-flex align-items-center text-muted fw-600">
+                        <div class="me-4">
+                            <i class="bi bi-person-circle me-1 text-primary"></i>
+                            {% if post.author.first_name and post.author.last_name %}
+                                {{ post.author.first_name }} {{ post.author.last_name }}
+                            {% else %}
+                                {{ post.author.username }}
+                            {% endif %}
+                        </div>
+                        <div>
+                            <i class="bi bi-calendar3 me-1 text-primary"></i>
+                            {{ post.created_at|date:"d.m.Y H:i" }}
+                        </div>
+                    </div>
+                </div>
+
+                {% if post.photo %}
+                <div class="px-4">
+                    <img src="{{ post.photo.url }}" class="img-fluid rounded-3 w-100 shadow-sm" alt="{{ post.title }}" style="max-height: 500px; object-fit: cover;">
+                </div>
+                {% endif %}
+
+                <div class="card-body p-4 pt-4">
+                    <div class="mb-5">
+                        <h4 class="fw-700 text-primary mb-3">
+                            <i class="bi bi-lightbulb me-2"></i>Bugun nimani o'rgandim?
+                        </h4>
+                        <div class="p-4 bg-light rounded-3" style="font-size: 1.1rem; line-height: 1.8; color: #333;">
+                            {{ post.learned_today|linebreaks }}
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <h4 class="fw-700 text-primary mb-3">
+                            <i class="bi bi-trophy me-2"></i>Qanday amaliy tajriba oldim?
+                        </h4>
+                        <div class="p-4 bg-light rounded-3" style="font-size: 1.1rem; line-height: 1.8; color: #333;">
+                            {{ post.experience|linebreaks }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

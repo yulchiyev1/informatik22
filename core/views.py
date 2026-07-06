@@ -85,7 +85,7 @@ def home(request):
     else:
         latest_quiz = DailyTest.objects.order_by('?').first()
 
-    posts = StudentPost.objects.all()  # Already ordered by -created_at
+    posts = StudentPost.objects.all()[:2]  # Show only top 2 latest posts
 
     context = {
         'materials': materials,
@@ -206,3 +206,22 @@ def submit_quiz(request, quiz_id):
                 messages.error(request, f"❌ Noto'g'ri javob. To'g'ri javob '{quiz.correct_answer}' edi.")
 
     return redirect('home')
+
+
+def post_list(request):
+    """
+    Displays a full list of all student posts (titles only).
+    """
+    posts = StudentPost.objects.all()
+    context = {'posts': posts}
+    return render(request, 'core/post_list.html', context)
+
+
+def post_detail(request, pk):
+    """
+    Displays a single student post in full screen.
+    """
+    from django.shortcuts import get_object_or_404
+    post = get_object_or_404(StudentPost, pk=pk)
+    context = {'post': post}
+    return render(request, 'core/post_detail.html', context)

@@ -1,0 +1,50 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Barcha Postlar — Informatik22{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <h2 class="section-title mb-0">
+                    <i class="bi bi-list-stars me-2"></i>Barcha Postlar
+                </h2>
+                <a href="{% url 'home' %}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                    <i class="bi bi-arrow-left me-1"></i>Orqaga
+                </a>
+            </div>
+
+            {% if posts %}
+                <div class="list-group shadow-sm" style="border-radius: 14px;">
+                    {% for post in posts %}
+                        <a href="{% url 'post_detail' post.id %}" class="list-group-item list-group-item-action p-4 border-0 border-bottom">
+                            <div class="d-flex w-100 justify-content-between align-items-center">
+                                <h5 class="mb-1 fw-700" style="color: #1a1a2e;">
+                                    <i class="bi bi-journal-text text-primary me-2"></i>{{ post.title }}
+                                </h5>
+                                <small class="text-muted"><i class="bi bi-calendar3 me-1"></i>{{ post.created_at|date:"d.m.Y H:i" }}</small>
+                            </div>
+                            <p class="mb-1 mt-2 text-muted fw-600">
+                                <i class="bi bi-person-circle me-1"></i>
+                                {% if post.author.first_name and post.author.last_name %}
+                                    {{ post.author.first_name }} {{ post.author.last_name }}
+                                {% else %}
+                                    {{ post.author.username }}
+                                {% endif %}
+                            </p>
+                        </a>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="card border-0 shadow-sm rounded-4">
+                    <div class="card-body text-center py-5 text-muted">
+                        <i class="bi bi-journals fs-1 d-block mb-3 text-primary opacity-50"></i>
+                        <h3 class="fw-600 fs-5">Hali postlar yo'q</h3>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
