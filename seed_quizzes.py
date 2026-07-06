@@ -91,7 +91,7 @@ def shuffle_options(question_dict, correct_answer_text):
     return question_dict
 
 # 1. Excel formulalari (7-sinf)
-for _ in range(20):
+for _ in range(15):
     a = random.randint(2, 10)
     b = random.randint(2, 10)
     c = random.randint(2, 10)
@@ -106,7 +106,7 @@ for _ in range(20):
     quizzes_data.append(shuffle_options(q, str(ans)))
 
 # 2. Sanoq sistemalari (8-sinf)
-for n in range(2, 22):
+for n in range(2, 17):
     bin_str = bin(n)[2:]
     q = {
         "q": f"O'nlik sanoq sistemasidagi {n} soni ikkilik sanoq sistemasida qanday yoziladi?",
@@ -118,7 +118,7 @@ for n in range(2, 22):
     quizzes_data.append(shuffle_options(q, bin_str))
 
 # 3. Python mantiqiy elementlari (9-sinf)
-for _ in range(20):
+for _ in range(19):
     a = random.randint(1, 10)
     b = random.randint(1, 10)
     is_greater = a > b
