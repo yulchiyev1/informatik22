@@ -1,1 +1,1 @@
-web: gunicorn informatik22.wsgi --log-file -
+web: gunicorn informatik22.wsgi --bind 0.0.0.0:$PORT --log-file -

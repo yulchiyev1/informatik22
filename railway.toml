@@ -2,7 +2,7 @@
 builder = "nixpacks"
 
 [deploy]
-startCommand = "gunicorn informatik22.wsgi --log-file -"
+startCommand = "gunicorn informatik22.wsgi --bind 0.0.0.0:$PORT --log-file -"
 healthcheckPath = "/"
 healthcheckTimeout = 300
 restartPolicyType = "on_failure"
