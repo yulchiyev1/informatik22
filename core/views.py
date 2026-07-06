@@ -86,8 +86,13 @@ def home(request):
     if request.user.is_authenticated:
         profile, _ = Profile.objects.get_or_create(user=request.user)
         today = timezone.localdate()
-        if profile.last_quiz_attempt == today:
-            latest_quiz = None  # Already attempted today
+        if profile.last_quiz_attempt != today:
+            profile.daily_quiz_count = 0
+            profile.last_quiz_attempt = today
+            profile.save()
+
+        if profile.daily_quiz_count >= 20:
+            latest_quiz = None  # Reached daily limit
         else:
             latest_quiz = DailyTest.objects.exclude(solved_by=request.user).order_by('?').first()
     else:
@@ -196,11 +201,16 @@ def submit_quiz(request, quiz_id):
             from django.utils import timezone
             profile, _ = Profile.objects.get_or_create(user=request.user)
             today = timezone.localdate()
-            if profile.last_quiz_attempt == today:
-                messages.warning(request, "Siz bugun bitta test ishlab bo'ldingiz. Ertaga yana urinib ko'ring!")
+            if profile.last_quiz_attempt != today:
+                profile.daily_quiz_count = 0
+                profile.last_quiz_attempt = today
+                profile.save()
+
+            if profile.daily_quiz_count >= 20:
+                messages.warning(request, "Siz bugun ruxsat etilgan maksimal 20 ta testni ishlab bo'ldingiz. Ertaga yana urinib ko'ring!")
                 return redirect('home')
 
-            profile.last_quiz_attempt = today
+            profile.daily_quiz_count += 1
             profile.save()
 
             if selected_answer == quiz.correct_answer:

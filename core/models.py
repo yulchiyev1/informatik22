@@ -13,6 +13,7 @@ class Profile(models.Model):
     is_approved = models.BooleanField(default=False, verbose_name="Tasdiqlangan")
     points = models.FloatField(default=0.0, verbose_name="Ballar")
     last_quiz_attempt = models.DateField(null=True, blank=True, verbose_name="Oxirgi test yechgan sana")
+    daily_quiz_count = models.IntegerField(default=0, verbose_name="Bugungi yechilgan testlar soni")
 
     class Meta:
         verbose_name = "Profil"
