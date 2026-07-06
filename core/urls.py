@@ -15,4 +15,7 @@ urlpatterns = [
 
     # Student posts
     path('create-post/', views.create_post, name='create_post'),
+
+    # Quiz submission
+    path('submit-quiz/<int:quiz_id>/', views.submit_quiz, name='submit_quiz'),
 ]

@@ -77,6 +77,7 @@ class DailyTest(models.Model):
     option_c = models.CharField(max_length=300, verbose_name="C variant")
     option_d = models.CharField(max_length=300, verbose_name="D variant")
     correct_answer = models.CharField(max_length=1, choices=ANSWER_CHOICES, verbose_name="To'g'ri javob")
+    solved_by = models.ManyToManyField(User, related_name='solved_quizzes', blank=True, verbose_name="Yechgan o'quvchilar")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Yaratilgan vaqt")
 
     class Meta:

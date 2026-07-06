@@ -82,7 +82,10 @@ def home(request):
         is_approved=True
     ).order_by('-points')[:5]
 
-    latest_quiz = DailyTest.objects.first()  # Already ordered by -created_at
+    if request.user.is_authenticated:
+        latest_quiz = DailyTest.objects.exclude(solved_by=request.user).order_by('?').first()
+    else:
+        latest_quiz = DailyTest.objects.order_by('?').first()
 
     posts = StudentPost.objects.all()  # Already ordered by -created_at
 
@@ -160,3 +163,41 @@ def create_post(request):
 
     context = {'form': form}
     return render(request, 'core/create_post.html', context)
+
+
+@login_required
+def submit_quiz(request, quiz_id):
+    """
+    Handles quiz submission. Awards 1 point if correct and tracks that the user solved it.
+    """
+    if request.method == 'POST':
+        try:
+            quiz = DailyTest.objects.get(id=quiz_id)
+        except DailyTest.DoesNotExist:
+            messages.error(request, "Quiz topilmadi.")
+            return redirect('home')
+
+        # Check if already solved
+        if request.user in quiz.solved_by.all():
+            messages.warning(request, "Siz bu quizni allaqachon yechgansiz.")
+            return redirect('home')
+
+        selected_answer = request.POST.get('quiz_answer')
+        
+        if not selected_answer:
+            messages.warning(request, "Iltimos, javob variantini tanlang!")
+            return redirect('home')
+
+        if selected_answer == quiz.correct_answer:
+            profile, _ = Profile.objects.get_or_create(user=request.user)
+            profile.points += 1.0
+            profile.save()
+            
+            quiz.solved_by.add(request.user)
+            messages.success(request, f"✅ To'g'ri javob! Sizga 1 ball qo'shildi. (To'g'ri javob: {quiz.correct_answer})")
+        else:
+            messages.error(request, f"❌ Noto'g'ri javob. To'g'ri javob '{quiz.correct_answer}' edi. Boshqa quizlarda omadingizni sinab ko'ring!")
+            # Still add to solved_by so they can't try again to cheat
+            quiz.solved_by.add(request.user)
+
+    return redirect('home')
