@@ -27,6 +27,13 @@ DEBUG = config('DEBUG', default=True, cast=bool)
 # In production: Railway sets this automatically (e.g. .railway.app)
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='*', cast=Csv())
 
+# CSRF Trusted Origins for HTTPS hosting (Railway)
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.railway.app',
+    'https://web-production-e6059.up.railway.app',
+]
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Application definition
 # ─────────────────────────────────────────────────────────────────────────────
