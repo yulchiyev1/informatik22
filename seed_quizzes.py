@@ -1,5 +1,6 @@
 import os
 import django
+import random
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'informatik22.settings')
 django.setup()
@@ -7,74 +8,101 @@ django.setup()
 from core.models import DailyTest
 from django.contrib.auth.models import User
 
-# Adminni topamiz (yoki birinchi superuserni)
+# Adminni topamiz
 admin_user = User.objects.filter(is_superuser=True).first()
 if not admin_user:
     admin_user = User.objects.create_superuser('admin', 'admin@test.com', 'admin1234')
 
-# Asosiy Python va Algoritm savollari
-quizzes_data = [
-    {"q": "Python'da ro'yxatning uzunligini qaysi funksiya orqali bilish mumkin?", "a": "size()", "b": "len()", "c": "length()", "d": "count()", "ans": "B"},
-    {"q": "O'zgaruvchini butun son turiga aylantirish uchun nima ishlatiladi?", "a": "int()", "b": "str()", "c": "float()", "d": "bool()", "ans": "A"},
-    {"q": "Python'da izoh (comment) qaysi belgi bilan boshlanadi?", "a": "//", "b": "/*", "c": "#", "d": "--", "ans": "C"},
-    {"q": "Qaysi algoritm O(n log n) vaqtda ishlaydi?", "a": "Bubble Sort", "b": "Selection Sort", "c": "Merge Sort", "d": "Insertion Sort", "ans": "C"},
-    {"q": "Stack qaysi prinsipda ishlaydi?", "a": "FIFO", "b": "LIFO", "c": "GIGO", "d": "Random", "ans": "B"},
-    {"q": "Queue qaysi prinsipda ishlaydi?", "a": "LIFO", "b": "FIFO", "c": "LILO", "d": "Hech qaysi", "ans": "B"},
-    {"q": "Binary Search uchun massiv qanday holatda bo'lishi kerak?", "a": "Tasodifiy", "b": "Teskari", "c": "Saralangan", "d": "Katta", "ans": "C"},
-    {"q": "Python'da bo'sh ro'yxat qanday e'lon qilinadi?", "a": "[]", "b": "{}", "c": "()", "d": "list{}", "ans": "A"},
-    {"q": "x = 5; y = 2; x // y natijasi nima?", "a": "2.5", "b": "2", "c": "3", "d": "1", "ans": "B"},
-    {"q": "x = 5; y = 2; x % y natijasi nima?", "a": "2", "b": "1", "c": "2.5", "d": "0", "ans": "B"},
-    {"q": "Python'da funksiya qaysi so'z bilan yaratiladi?", "a": "function", "b": "create", "c": "def", "d": "fun", "ans": "C"},
-    {"q": "Listning oxiriga element qo'shish uchun qaysi metod ishlatiladi?", "a": "add()", "b": "append()", "c": "insert()", "d": "push()", "ans": "B"},
-    {"q": "O(1) vaqt nima degani?", "a": "Vaqt n ga bog'liq", "b": "O'zgarmas vaqt", "c": "Eksponensial vaqt", "d": "Logarifmik", "ans": "B"},
-    {"q": "Bubble sortning eng yomon holatdagi tezligi qanday?", "a": "O(n)", "b": "O(n log n)", "c": "O(n^2)", "d": "O(log n)", "ans": "C"},
-    {"q": "Set nima maqsadda ishlatiladi?", "a": "Tartiblangan ro'yxat uchun", "b": "Takrorlanmas elementlar uchun", "c": "Lug'at uchun", "d": "Index orqali qidirish uchun", "ans": "B"},
-    {"q": "Python'da dictionary qanday qavs bilan yaratiladi?", "a": "()", "b": "[]", "c": "{}", "d": "<>", "ans": "C"},
-    {"q": "Recursion nima?", "a": "Tsiklning bir turi", "b": "Funksiyaning o'zini o'zi chaqirishi", "c": "Fayl yozish", "d": "Ma'lumotlar tuzilmasi", "ans": "B"},
-    {"q": "Dynamic Programming nima?", "a": "Veb dasturlash", "b": "Muammoni kichik qismlarga bo'lib yechish", "c": "Obyektga yo'naltirilganlik", "d": "O'zgaruvchilarni dinamik tiplash", "ans": "B"},
-    {"q": "Dasturlashda 'Bug' nima?", "a": "Hasharot", "b": "Dasturdagi xato", "c": "Yangi funksiya", "d": "Fayl turi", "ans": "B"},
-    {"q": "Fibonacci ketma-ketligi qanday boshlanadi?", "a": "1, 2, 3...", "b": "0, 1, 1, 2...", "c": "2, 4, 6...", "d": "1, 3, 5...", "ans": "B"}
+print("Eski oson testlar o'chirib tashlanmoqda...")
+DailyTest.objects.all().delete()
+
+quizzes_data = []
+
+# --- 1. QIYIN ALGORITM VA MA'LUMOTLAR TUZILMASI SAVOLLARI ---
+algo_questions = [
+    {"q": "Qizil-qora daraxtda (Red-Black Tree) qo'shish va o'chirish amallarining o'rtacha vaqt murakkabligi qanday?", "a": "O(1)", "b": "O(log n)", "c": "O(n)", "d": "O(n log n)", "ans": "B"},
+    {"q": "Dijkstra algoritmida manfiy vaznli qirralar qatnashsa nima bo'ladi?", "a": "Oddiy ishlaydi", "b": "Kutilmagan/noto'g'ri natija berishi mumkin", "c": "O(1) da tugaydi", "d": "Siklni topib beradi", "ans": "B"},
+    {"q": "Bellman-Ford algoritmining vaqt murakkabligi qanday? (V - uchlar, E - qirralar)", "a": "O(V + E)", "b": "O(V * E)", "c": "O(V^2)", "d": "O(E log V)", "ans": "B"},
+    {"q": "Kruskal algoritmida qaysi ma'lumotlar tuzilmasi asosiy rol o'ynaydi?", "a": "Stack", "b": "Disjoint-Set (Union-Find)", "c": "Hash Table", "d": "Trie", "ans": "B"},
+    {"q": "Qaysi saralash (sort) algoritmi 'in-place' va o'rtacha O(n log n) vaqt oladi, lekin barqaror (stable) emas?", "a": "Merge Sort", "b": "Quick Sort", "c": "Bubble Sort", "d": "Radix Sort", "ans": "B"},
+    {"q": "Grafda eng qisqa yo'lni barcha juftliklar orasida (All-Pairs Shortest Path) qaysi algoritm topadi?", "a": "Dijkstra", "b": "Floyd-Warshall", "c": "DFS", "d": "Prim", "ans": "B"},
+    {"q": "A* (A-star) qidiruv algoritmida 'Heuristic' (evristika) funksiyasi qanday xususiyatga ega bo'lishi kerak?", "a": "Har doim 0 ga teng bo'lishi", "b": "Haqiqiy masofani ortiqcha baholamasligi (Admissible)", "c": "Faqat manfiy bo'lishi", "d": "O(n!) vaqt olishi", "ans": "B"},
+    {"q": "Topologik saralash (Topological Sort) qanday graflarda qo'llaniladi?", "a": "Barcha graflarda", "b": "Aylanasiz yo'naltirilgan graflarda (DAG)", "c": "Daraxtlarda", "d": "Bog'lanmagan graflarda", "ans": "B"},
+    {"q": "NP-Complete muammosini polinom vaqtda hal qiladigan algoritm topilsa nima bo'ladi?", "a": "P = NP deb e'lon qilinadi", "b": "Hech narsa bo'lmaydi", "c": "Kompyuterlar buziladi", "d": "O(1) vaqtli algoritm topilgan bo'ladi", "ans": "A"},
+    {"q": "Trie (Prefix Tree) ma'lumotlar tuzilmasining asosiy maqsadi nima?", "a": "Sonlarni saralash", "b": "Stringlar (matnlar) ustida tez qidiruv", "c": "Grafda sikl topish", "d": "Matrisalarni ko'paytirish", "ans": "B"},
 ]
 
-# Generate more programmatically to reach 100 questions
-for i in range(1, 81):
-    n1 = i % 10 + 2
-    n2 = (i * 3) % 7 + 1
-    op = "+" if i % 2 == 0 else "*"
-    res = n1 + n2 if op == "+" else n1 * n2
-    
-    question = {
-        "q": f"Algoritm: agar x = {n1} va y = {n2} bo'lsa, x {op} y ifodasi qanday natija beradi?",
-        "a": str(res - 1),
-        "b": str(res),
-        "c": str(res + 1),
-        "d": str(res * 2),
-        "ans": "B"
-    }
-    
-    # Shuffle options slightly so B is not always the answer
-    import random
-    options = [question["a"], question["b"], question["c"], question["d"]]
-    ans_val = options[1] # "b" contains correct answer
-    random.shuffle(options)
-    
-    correct_letter = "A"
-    if options[0] == ans_val: correct_letter = "A"
-    elif options[1] == ans_val: correct_letter = "B"
-    elif options[2] == ans_val: correct_letter = "C"
-    elif options[3] == ans_val: correct_letter = "D"
-    
-    quizzes_data.append({
-        "q": question["q"],
-        "a": options[0],
-        "b": options[1],
-        "c": options[2],
-        "d": options[3],
-        "ans": correct_letter
-    })
+# --- 2. ADVANCED PYTHON SAVOLLARI ---
+python_questions = [
+    {"q": "Python'da GIL (Global Interpreter Lock) nima vazifa bajaradi?", "a": "Dasturni tezlashtiradi", "b": "Bir vaqtda faqat bitta thread ishlashini ta'minlaydi", "c": "Xatolarni ushlaydi", "d": "Xotirani tozalaydi", "ans": "B"},
+    {"q": "Python'da generator bilan oddiy funksiyaning asosiy farqi nima?", "a": "Generator return ishlatadi", "b": "Generator yield ishlatadi va xotirani tejaydi", "c": "Generator sekinroq ishlaydi", "d": "Generator faqat raqamlar qaytaradi", "ans": "B"},
+    {"q": "Decorator (Dekorator) Pythonda qanday ishlaydi?", "a": "Sintaksis xatolarini to'g'irlaydi", "b": "Funksiyani o'zgartirmasdan uning imkoniyatlarini kengaytiradi", "c": "Faqat class ichida yoziladi", "d": "Ma'lumotlar bazasiga ulanish uchun", "ans": "B"},
+    {"q": "@staticmethod va @classmethod o'rtasidagi farq nima?", "a": "Farqi yo'q", "b": "@classmethod o'zining birinchi argumenti sifatida class ni oladi (cls), @staticmethod umuman olmaydi", "c": "@staticmethod faqat obyektlarda ishlaydi", "d": "@classmethod tezroq ishlaydi", "ans": "B"},
+    {"q": "Python'da memory management qanday amalga oshiriladi?", "a": "Faqat Garbage Collector", "b": "Reference Counting va Garbage Collector orqali", "c": "C++ kabi qo'lda (malloc/free)", "d": "OS tomonidan bajariladi", "ans": "B"},
+    {"q": "Dunder (magic) metodlar nima?", "a": "Xavfli metodlar", "b": "Ikki marta pastki chiziq bilan boshlanuvchi va tugaydigan metodlar (masalan __init__)", "c": "Faqat raqam qaytaruvchi metodlar", "d": "C tilidagi metodlar", "ans": "B"},
+    {"q": "*args va **kwargs vazifasi?", "a": "Faqat stringlar uchun", "b": "Noma'lum miqdordagi pozitsion va nomli argumentlarni qabul qilish", "c": "Xotirani tozalash", "d": "Global o'zgaruvchilarni chaqirish", "ans": "B"},
+    {"q": "List Comprehension o'rniga generator expression ishlatish qachon foydali?", "a": "Qisqa ro'yxatlarda", "b": "Katta hajmdagi ma'lumotlarda, xotirani tejash uchun", "c": "Sonlarni ko'paytirishda", "d": "Matnlar bilan ishlashda", "ans": "B"},
+    {"q": "Pythonda 'deepcopy' va 'shallow copy' ning farqi nima?", "a": "Ikkalasi bir xil", "b": "Deepcopy barcha ichma-ich tuzilmalarni ham mustaqil nusxalaydi", "c": "Shallow copy xotirada ko'p joy oladi", "d": "Deepcopy faqat stringlarni nusxalaydi", "ans": "B"},
+    {"q": "MRO (Method Resolution Order) Pythonda nimani anglatadi?", "a": "Xotira bo'shatish tartibini", "b": "Ko'p karra vorislikda klass metodlarini izlash ketma-ketligini", "c": "Modullarni yuklash ketma-ketligini", "d": "Funksiya ishlash tezligini", "ans": "B"},
+]
 
-print(f"Jami {len(quizzes_data)} ta savol tayyorlandi.")
-print("Ma'lumotlar bazasiga yuklanmoqda...")
+for q in algo_questions + python_questions:
+    quizzes_data.append(q)
+
+# --- 3. GENERATED ADVANCED ALGORITHMIC SCENARIOS ---
+# Recursion, Dynamic Programming, Big O, Graph theory
+# We will generate programmatic variations of hard questions
+
+def shuffle_options(question_dict, correct_answer_text):
+    opts = [question_dict["a"], question_dict["b"], question_dict["c"], question_dict["d"]]
+    random.shuffle(opts)
+    
+    letters = ["A", "B", "C", "D"]
+    correct_letter = "A"
+    
+    for i in range(4):
+        question_dict[letters[i].lower()] = opts[i]
+        if opts[i] == correct_answer_text:
+            correct_letter = letters[i]
+            
+    question_dict["ans"] = correct_letter
+    return question_dict
+
+# Generate 50 DP / Recurrence questions
+for n in range(10, 60):
+    val = n * (n - 1) // 2
+    q = {
+        "q": f"To'liq grafda (Complete Graph) {n} ta uch bo'lsa, jami qancha qirra (edge) bo'ladi?",
+        "a": str(val - n),
+        "b": str(val),
+        "c": str(n * n),
+        "d": str(val + n),
+    }
+    quizzes_data.append(shuffle_options(q, str(val)))
+
+# Generate 50 Time Complexity specific questions
+for k in range(5, 55):
+    q = {
+        "q": f"O(n^{k}) vaqt murakkabligi polinom (polynomial) vaqtmi yoki eksponensial?",
+        "a": "Eksponensial",
+        "b": "Polinom",
+        "c": "Ikkalasi ham",
+        "d": "Logarifmik",
+    }
+    quizzes_data.append(shuffle_options(q, "Polinom"))
+
+for m in range(2, 42):
+    ans = 2 ** m
+    q = {
+        "q": f"Balandligi {m} ga teng bo'lgan to'liq Binar Daraxtda (Full Binary Tree) eng ko'pi bilan nechta barg (leaf node) bo'lishi mumkin?",
+        "a": str(ans - 1),
+        "b": str(ans),
+        "c": str(ans * 2),
+        "d": str(ans // 2),
+    }
+    quizzes_data.append(shuffle_options(q, str(ans)))
+
+print(f"Jami {len(quizzes_data)} ta qiyin savollar tayyorlandi.")
 
 count = 0
 for data in quizzes_data:
@@ -89,4 +117,4 @@ for data in quizzes_data:
     )
     count += 1
 
-print(f"Muvaffaqiyatli {count} ta quiz bazaga saqlandi!")
+print(f"Muvaffaqiyatli {count} ta qiyin quiz bazaga saqlandi!")
