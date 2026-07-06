@@ -78,7 +78,7 @@ def home(request):
     """
     materials = TeacherMaterial.objects.all()[:5]
 
-    top_students = Profile.objects.all().order_by('-points')[:5]
+    top_students = Profile.objects.exclude(user__is_superuser=True).order_by('-points')[:5]
 
     if request.user.is_authenticated:
         latest_quiz = DailyTest.objects.exclude(solved_by=request.user).order_by('?').first()
